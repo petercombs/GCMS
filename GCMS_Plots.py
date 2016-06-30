@@ -1,5 +1,6 @@
 from numpy import mean, array,  min, empty_like, zeros_like
-from matplotlib.pyplot import plot
+from matplotlib.pyplot import plot, vlines
+import matplotlib.pyplot as mpl
 import pandas as pd
 import numpy as np
 from scipy import optimize
@@ -78,10 +79,10 @@ norm_methods = {
     'max': max,
 }
 
-def plot_tic(cdf_file, *args, **kwargs):
+def plot_tic(cdf_file, t_offset=0.0, zeroed=0, normed=False, norm_method='mean', *args, **kwargs):
     tic = array(cdf_file.variables['total_intensity'].data)
     times = array(cdf_file.variables['scan_acquisition_time'].data)
-    corr = kwargs.pop('zeroed', 0)
+    corr = zeroed
     if corr == 0:
         pass
     else:
@@ -89,8 +90,6 @@ def plot_tic(cdf_file, *args, **kwargs):
                                corr)
         tic -= corr
 
-    normed = kwargs.pop('normed', False)
-    norm_method = kwargs.pop('norm_method', 'mean')
     if norm_method not in norm_methods and not callable(norm_method):
         raise ValueError('Unknown normalization method: "{}"; must be one of {}'
                          .format(norm_method,
@@ -100,14 +99,13 @@ def plot_tic(cdf_file, *args, **kwargs):
 
     if normed and len(normed) >= 2:
         normer = norm_method(tic[(normed[0] < times) & (times < normed[1])])
-        tic /= normer
+        tic /= (normer+.01)
         if len(normed) >=3:
             tic *= normed[2]
     elif normed:
         tic /= normed[0]
 
 
-    t_offset = kwargs.pop('t_offset', 0.0)
     if t_offset == 'auto' and 'normed' in locals():
         range = normed[:2]
         sel = (range[0] < times) & (times < range[1])
@@ -132,4 +130,33 @@ def plot_tic(cdf_file, *args, **kwargs):
                   label=label,
                   **kwargs)
     return retval
+
+def plot_spectrum(cdf_file, time, jitter=0.0, normed=False, *args, **kwargs):
+    if not np.iterable(time):
+        time = [time]
+    colors = kwargs.pop('colors', itertools.cycle('brgcmk'))
+    if hasattr(colors, 'len') and len(colors)==1:
+        colors = itertools.repeat(colors)
+    for t,c in zip(time, colors):
+        times = cdf_file.variables['scan_acquisition_time'].data
+        best_time_ix = np.argmin(abs(times - t))
+        label = ('{} @t= {:.1f}'
+                 .format(kwargs.pop('label', cdf_file.experiment_title.decode()),
+                         times[best_time_ix]))
+
+
+        ms_coords = empty_like(cdf_file.variables['scan_acquisition_time'].data)
+        ms_coords[0] = 0
+        ms_coords[1:] = np.cumsum(cdf_file.variables['point_count'].data)[:-1]
+        ms_idx_lo, ms_idx_hi = ms_coords[best_time_ix: best_time_ix+2]
+        masses = array(cdf_file.variables['mass_values']
+                       .data[ms_idx_lo: ms_idx_hi])
+        masses += jitter * np.random.rand()
+        heights = array(cdf_file .variables['intensity_values'].
+                        data[ms_idx_lo: ms_idx_hi])
+        if normed:
+            heights /= max(heights)
+
+        vlines(masses, 0, heights, *args, colors=c, label=label, **kwargs)
+
 
