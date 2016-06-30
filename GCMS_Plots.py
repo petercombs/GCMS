@@ -4,6 +4,11 @@ import matplotlib.pyplot as mpl
 import pandas as pd
 import numpy as np
 from scipy import optimize
+import itertools
+from glob import glob
+from os import path
+from sys import argv
+from scipy.io import netcdf_file
 
 def rolling_minimum(arr, window):
     retval = empty_like(arr)
@@ -158,5 +163,36 @@ def plot_spectrum(cdf_file, time, jitter=0.0, normed=False, *args, **kwargs):
             heights /= max(heights)
 
         vlines(masses, 0, heights, *args, colors=c, label=label, **kwargs)
+
+
+if __name__ == "__main__":
+    if argv[1:]:
+        files = {dir: glob(path.join(dir, '*.CDF')) for dir in argv[1:]}
+    else:
+        files = glob('*/*.CDF')
+        files = {dir: glob(path.join(dir, '*.CDF'))
+                 for dir in {path.dirname(file) for file in files}}
+
+    for day in files:
+        day_files = [netcdf_file(file) for file in files[day]]
+        sample_types = {file.experiment_title.decode().split('_r')[0]
+                        for file in day_files}
+        if not day_files: continue
+        mpl.figure()
+        mpl.title(day)
+        color_list = {type: color for type, color in
+                      zip(sample_types,
+                          mpl.cm.Set3(np.linspace(0, 1, len(sample_types)))
+                         )
+                     }
+        for file in day_files:
+            type = file.experiment_title.decode().split('_r')[0]
+            plot_tic(file,
+                     color=color_list[type],
+                     zeroed=20,
+                     t_offset='auto',
+                     normed=(1016,1022),
+                     norm_method='max')
+        mpl.legend()
 
 
