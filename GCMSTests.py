@@ -4,6 +4,7 @@ from scipy.stats import ttest_ind
 import numpy as np
 import pandas as pd
 from sys import argv
+from os import path
 
 def compare_samples(samples, test_types, control_types, bins, acc_func=np.sum):
     out = pd.DataFrame(index=sorted(bins),
@@ -90,15 +91,29 @@ def parse_args():
     parser.add_argument('--control-types', '-C', nargs='+')
     parser.add_argument('--test-types', '-T', nargs='+')
     parser.add_argument('--test-name', '-n', default='GCMS_test')
+    parser.add_argument('--outdir', '-o', default='.')
     parser.add_argument('in_files', nargs='+')
     return parser.parse_args()
 
 
+out_header = """###
+# {} vs {}
+# Test files: {test}
+# Control files: {control}
+#
+#
+"""
 if __name__ == "__main__":
     args = parse_args()
     samples = [netcdf_file(fname) for fname in args.in_files]
     result = compare_samples(samples, args.test_types, args.control_types,
-                             bins).sort_values(by='t_start')
-    result.to_csv(args.test_name + '.tsv', sep='\t')
+                             bins)
+    outfile = open(path.join(args.outdir, args.test_name + '.tsv'), mode='w')
+    outfile.write(out_header.format(','.join(args.test_types),
+                                    ','.join(args.control_types),
+                                    **result.filenames
+                                   )
+                 )
+    result.sort_values(by='t_start').to_csv(outfile, sep='\t')
 
 
