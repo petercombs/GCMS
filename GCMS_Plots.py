@@ -84,9 +84,7 @@ norm_methods = {
     'max': max,
 }
 
-def plot_tic(cdf_file, t_offset=0.0, zeroed=0, normed=False, norm_method='mean', *args, **kwargs):
-    tic = array(cdf_file.variables['total_intensity'].data)
-    times = array(cdf_file.variables['scan_acquisition_time'].data)
+def normalize_tic(tic, times, t_offset=0.0, zeroed=0, norm_method='mean', normed=[1]):
     corr = zeroed
     if corr == 0:
         pass
@@ -102,12 +100,12 @@ def plot_tic(cdf_file, t_offset=0.0, zeroed=0, normed=False, norm_method='mean',
     else:
         norm_method = norm_methods.get(norm_method, norm_method)
 
-    if normed and len(normed) >= 2:
+    if len(normed) >= 2:
         normer = norm_method(tic[(normed[0] < times) & (times < normed[1])])
         tic /= (normer+.01)
         if len(normed) >=3:
             tic *= normed[2]
-    elif normed:
+    else:
         tic /= normed[0]
 
 
@@ -123,9 +121,18 @@ def plot_tic(cdf_file, t_offset=0.0, zeroed=0, normed=False, norm_method='mean',
             t_offset = p2[1]
         else:
             t_offset = 0.0
-            print("Poor fit for normalization peak: t={} ({})".format(p2[1]),
-                  cdf_file.experiment_title)
+            print("Poor fit for normalization peak: t={}".format(p2[1]))
     times -= t_offset
+
+    return tic, times
+
+
+def plot_tic(cdf_file, t_offset=0.0, zeroed=0, normed=False, norm_method='mean', *args, **kwargs):
+    tic = array(cdf_file.variables['total_intensity'].data)
+    times = array(cdf_file.variables['scan_acquisition_time'].data)
+
+    tic, times = normalize_tic(tic, times,
+                               t_offset, zeroed, norm_method, normed)
 
 
     label = kwargs.pop('label', cdf_file.experiment_title.decode())
