@@ -188,8 +188,10 @@ def plot_all_tics(list_of_lists):
 
 
 if __name__ == "__main__":
-    if argv[1:]:
+    if argv[1:] and np.all([path.isdir(dname) for dname in argv[1:]]):
         files = {dir: glob(path.join(dir, '*.CDF')) for dir in argv[1:]}
+    elif argv[1:]:
+        files = {'Input': argv[1:]}
     else:
         files = glob('*/*.CDF')
         files = {dir: glob(path.join(dir, '*.CDF'))
