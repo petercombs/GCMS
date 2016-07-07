@@ -171,6 +171,21 @@ def plot_spectrum(cdf_file, time, jitter=0.0, normed=False, *args, **kwargs):
 
         vlines(masses, 0, heights, *args, colors=c, label=label, **kwargs)
 
+def plot_all_tics(list_of_lists):
+    color_list = [color for  color in
+                      mpl.cm.Set1(np.linspace(0, 1, len(list_of_lists),
+                                              endpoint=True))
+                 ]
+
+    for color, samples in zip(color_list, list_of_lists):
+        for sample in samples:
+            plot_tic(sample,
+                     color=color,
+                     zeroed=20,
+                     t_offset='auto',
+                     normed=(1016,1022),
+                     norm_method='max')
+
 
 if __name__ == "__main__":
     if argv[1:]:
