@@ -97,6 +97,27 @@ bins = {
     '22C': (-100.6, -98.5),
 }
 
+# Jallon & David "Peak No" to GCMS compound I have
+jd_to_compound = pd.Series({
+    1:  '23C-2x',
+    3:  '23C-1x-L',
+    2:  '23C-1x-E',
+    5:  '23C',
+    6:  '25C-2X',
+    8:  '25C-1x-E',
+    9:  '25C-1x-L',
+    11: '25C',
+    12: '27C-2x-E',
+    13: '27C-2x-L',
+    15: '27C-1x-E',
+    16: '27C-1x-L',
+    17: '27C',
+    18: '29C-2x',
+    19: '29C-4x?',
+    21: '29C-2me?',
+})
+
+compound_to_jd = pd.Series({value:key for key, value in jd_to_compound.items()})
 
 
 def parse_args():
