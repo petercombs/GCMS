@@ -6,7 +6,8 @@ import pandas as pd
 from sys import argv
 from os import path
 
-def compare_samples(samples, test_types, control_types, bins, acc_func=np.sum):
+def compare_samples(samples, test_types, control_types, bins, acc_func=np.sum,
+                    skip_types=None):
     out = pd.DataFrame(index=sorted(bins),
                        columns=['t_start', 't_end',
                                 'test_mean', 'control_mean', 'tstat',
@@ -26,13 +27,26 @@ def compare_samples(samples, test_types, control_types, bins, acc_func=np.sum):
         tic = np.array(sample.variables['total_intensity'].data)
         times = np.array(sample.variables['scan_acquisition_time'].data)
         expt_title = sample.experiment_title.decode().split('_r')[0]
-        if expt_title in test_types:
-            test_data.append(normalize_tic(tic, times, **norm_kwargs))
-            test_filenames.append(sample.filename)
-        elif expt_title in control_types:
-            control_data.append(normalize_tic(tic, times, **norm_kwargs))
-            control_filenames.append(sample.filename)
-        else:
+        ided = False
+        for skip_type in skip_types:
+            if skip_type in expt_title:
+                ided = True
+        if ided:
+            print("Explicitly skipping ", expt_title, sample.filename)
+            continue
+        for test_type in test_types:
+            if test_type in expt_title:
+                test_data.append(normalize_tic(tic, times, **norm_kwargs))
+                test_filenames.append(sample.filename)
+                ided = True
+                break
+        for control_type in control_types:
+            if control_type in expt_title and not ided:
+                control_data.append(normalize_tic(tic, times, **norm_kwargs))
+                control_filenames.append(sample.filename)
+                ided = True
+                break
+        if not ided:
             print("skipping ", expt_title, sample.filename)
 
     for bin in bins:
@@ -91,6 +105,7 @@ def parse_args():
     parser.add_argument('--control-types', '-C', nargs='+')
     parser.add_argument('--test-types', '-T', nargs='+')
     parser.add_argument('--test-name', '-n', default='GCMS_test')
+    parser.add_argument('--skip-types', '-s', nargs='+')
     parser.add_argument('--outdir', '-o', default='.')
     parser.add_argument('in_files', nargs='+')
     return parser.parse_args()
@@ -107,7 +122,7 @@ if __name__ == "__main__":
     args = parse_args()
     samples = [netcdf_file(fname) for fname in args.in_files]
     result = compare_samples(samples, args.test_types, args.control_types,
-                             bins)
+                             bins, skip_types=args.skip_types)
     outfile = open(path.join(args.outdir, args.test_name + '.tsv'), mode='w')
     outfile.write(out_header.format(','.join(args.test_types),
                                     ','.join(args.control_types),
@@ -115,5 +130,5 @@ if __name__ == "__main__":
                                    )
                  )
     result.sort_values(by='t_start').to_csv(outfile, sep='\t')
-
+    outfile.close()
 
