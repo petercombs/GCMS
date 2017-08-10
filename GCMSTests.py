@@ -1,4 +1,5 @@
 from GCMS_Plots import normalize_tic
+from GCMSUtils import bins
 from scipy.io import netcdf_file
 from scipy.stats import ttest_ind
 import numpy as np
@@ -71,53 +72,6 @@ def compare_samples(samples, test_types, control_types, bins, acc_func=np.sum,
     return out
 
 
-
-bins = {
-    # Odd carbon chains
-    # E indicates early, L indicates late
-    '23C': (-75, -71),
-    '23C-1x-L': (-78.6, -76.23),
-    '23C-1x-E': (-80.5, -78.6),
-    '23C-2x': (-84.5, -81),
-    '25C': (-25, -22),
-    '25C-1x-L': (-28, -26.2),
-    '25C-1x-E': (-30, -28),
-    '25C-2X': (-33, -30),
-    '27C': (21, 23.5),
-    '27C-1x-L': (18.6, 20.2),
-    '27C-1x-E': (16.9, 18.6),
-    '27C-2x-L': (14.7, 16.4),
-    '27C-2x-E': (13.0, 14.7),
-    '29C-4x?': (56, 58.3),
-    '29C-2x': (58.3, 60.5),
-    '29C-2me?': (64, 66.5),
-    # Even carbon chains
-    '28C': (35, 40),
-    '24C': (-49, -47.5),
-    '22C': (-100.6, -98.5),
-}
-
-# Jallon & David "Peak No" to GCMS compound I have
-jd_to_compound = pd.Series({
-    1:  '23C-2x',
-    3:  '23C-1x-L',
-    2:  '23C-1x-E',
-    5:  '23C',
-    6:  '25C-2X',
-    8:  '25C-1x-E',
-    9:  '25C-1x-L',
-    11: '25C',
-    12: '27C-2x-E',
-    13: '27C-2x-L',
-    15: '27C-1x-E',
-    16: '27C-1x-L',
-    17: '27C',
-    18: '29C-2x',
-    19: '29C-4x?',
-    21: '29C-2me?',
-})
-
-compound_to_jd = pd.Series({value:key for key, value in jd_to_compound.items()})
 
 
 def parse_args():
