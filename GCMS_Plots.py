@@ -149,12 +149,12 @@ def plot_tic(cdf_file, t_offset=0.0, zeroed=0, normed=[1], norm_method='mean',
 
 
     label = kwargs.pop('label', cdf_file.experiment_title.decode())
-    retval = plot(times,
-                  tic,
-                  *args,
-                  label=label,
-                  **kwargs)
-    return retval
+    retval = ax.plot(times+(2*np.random.rand()-1)*jitter,
+                     tic,
+                     *args,
+                     label=label,
+                     **kwargs)
+    return tic, times, retval
 
 def plot_spectrum(cdf_file, time, jitter=0.0, normed=False, *args, **kwargs):
     if not np.iterable(time):
