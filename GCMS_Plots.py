@@ -127,9 +127,22 @@ def normalize_tic(tic, times, t_offset=0.0, zeroed=0, norm_method='mean', normed
     return tic, times
 
 
-def plot_tic(cdf_file, t_offset=0.0, zeroed=0, normed=False, norm_method='mean', *args, **kwargs):
+plot_cycler = (mpl.cycler(lw=[1,2,3,4,5,])
+                   * mpl.cycler(linestyle=['-', ':', '-.', '--'])
+                   * mpl.cycler(c='bgrcmk'))
+
+def plot_tic(cdf_file, t_offset=0.0, zeroed=0, normed=[1], norm_method='mean',
+             jitter=0.0, *args, **kwargs):
+    kwargs = kwargs.copy()
     tic = array(cdf_file.variables['total_intensity'].data)
     times = array(cdf_file.variables['scan_acquisition_time'].data)
+    ax = kwargs.pop('ax', mpl.gca())
+    if not hasattr(ax, 'cycler'):
+        ax.cycler = iter(plot_cycler)
+    for key, value in next(ax.cycler).items():
+        if key not in kwargs:
+            kwargs[key] = value
+
 
     tic, times = normalize_tic(tic, times,
                                t_offset, zeroed, norm_method, normed)
