@@ -1,17 +1,20 @@
-from matplotlib import pyplot as mpl
-import pandas as pd
-import numpy as np
-from glob import glob
 from collections import defaultdict
+from glob import glob
+from matplotlib import pyplot as mpl
 from matplotlib.pyplot import figure, legend, xticks, text, scatter
-import GCMS_Plots as gp
-import GCMSUtils as gu
+from scipy.io import netcdf_file
 from sklearn.decomposition import PCA
+import GCMSUtils as gu
+import GCMS_Plots as gp
+import Utils as ut
+import numpy as np
+import pandas as pd
 
 
 norm_kwargs = dict(zeroed=20, t_offset='auto', normed=(1010, 1032),
                        norm_method='max')
-#norm_kwargs2 = norm_kwargs.copy()
+norm_kwargs2 = norm_kwargs.copy()
+norm_kwargs2['normed'] = (1050, 1075)
 
 
 if __name__ == "__main__":
@@ -51,8 +54,10 @@ if __name__ == "__main__":
 
     all_data_normed = all_data.T - all_data.T.mean()
     all_data_normed /= all_data_normed.std()
+
+    figure()
     pca = PCA()
-    pca.fit(all_data_normed)
+    pca.fit(all_data_normed.select(ut.contains(['+', 'tsimbazaza'])))
     pc1 = np.dot(pca.components_[0], all_data_normed.T)
     pc2 = np.dot(pca.components_[1], all_data_normed.T)
     scatter(pc1, pc2)
