@@ -1,5 +1,8 @@
+from scipy.io import netcdf_file
 from scipy import optimize
 from numpy import sum, mean, max, empty_like, zeros_like, array
+from os import path
+from pickle import load
 import numpy as np
 import pandas as pd
 
@@ -110,6 +113,7 @@ bins = {
     '24C': (-49, -47.5),
     '22C': (-100.6, -98.5),
 }
+default_bins = bins
 
 # Jallon & David "Peak No" to GCMS compound I have
 jd_to_compound = pd.Series({
@@ -134,7 +138,20 @@ jd_to_compound = pd.Series({
 compound_to_jd = pd.Series({value:key for key, value in jd_to_compound.items()})
 
 
-def measure_bins(tic, times, bins, acc_func=np.sum):
+def measure_bins(tic, times, bins=bins, acc_func=np.sum):
+    if isinstance(bins, netcdf_file) or (isinstance(bins, str) and not
+                                         bins.endswith('.pkl')):
+        binpath = path.join(path.dirname(bins.filename), 'bins.pkl')
+        if path.exists(binpath):
+            bins = load(open(binpath, 'rb'))
+        else:
+            bins = default_bins
+    elif isinstance(bins, str):
+        if path.exists(bins):
+            bins=load(open(bins, 'rb'))
+        else:
+            bins = default_bins
+    print(bins == default_bins)
     ret = pd.Series(index=bins, data=np.nan)
     for bin in bins:
         bin_lo, bin_hi = min(bins[bin]), max(bins[bin])
