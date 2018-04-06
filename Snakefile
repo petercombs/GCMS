@@ -32,7 +32,7 @@ rule crispr_gcms:
         --control-types sechellia_WT \
         --test-types secCRISPR sechellia_CRISPR \
         --norm-peak-start 1060 --norm-peak-stop 1070 \
-        --test-label "D.sec eloF-" --control-label "D.sec WT" \
+        --test-label "\\\\textit{{D.sec eloF}}-" --control-label "\\\\textit{{D.sec}} WT" \
         --test-color "salmon" --control-color "red" \
         -- */*.CDF
         """
@@ -48,7 +48,7 @@ rule mel_eloF_noRNAi_gcms:
         -O {output.table} \
         --control-types eloF947+ gfp186+ bond+ \
         --test-types eloF947- \
-        --test-label "D.mel eloF-" --control-label "D.mel WT" \
+        --test-label "\\\\textit{{D.mel eloF-}}" --control-label "\\\\textit{{D.mel}} WT" \
         -- */*.CDF
         """
 
@@ -63,7 +63,7 @@ rule mel_eloF_gfp_gcms:
         -O {output.table} \
         --control-types gfp201 gfp186- gfp202 \
         --test-types eloF947- \
-        --test-label "D.mel eloF-" --control-label "D.mel WT" \
+        --test-label "\\\\textit{{D.mel eloF-}}" --control-label "\\\\textit{{D.mel}} WT" \
         -- */*.CDF
         """
 
@@ -78,7 +78,7 @@ rule mel_eloF_gcms:
         -O {output.table} \
         --control-types eloF947+ gfp201- gfp186+ \
         --test-types eloF947- \
-        --test-label "D.mel eloF-" --control-label "D.mel WT" \
+        --test-label "\\\\textit{{D.mel eloF-}}" --control-label "\\\\textit{{D.mel}} WT" \
         -- */*.CDF
         """
 
@@ -93,7 +93,7 @@ rule mel_bond_gcms:
         -O {output.table} \
         --control-types bond+ gfp186+ eloF947+ \
         --test-types bond- bond\
-        --test-label "D.mel bond-" --control-label "D.mel WT" \
+        --test-label "\\\\textit{{D.mel bond-}}" --control-label "\\\\textit{{D.mel}} WT" \
         -- */*.CDF
         """
 

@@ -6,6 +6,11 @@ import numpy as np
 import pandas as pd
 from os import path
 import matplotlib.pyplot as mpl
+from matplotlib import rc
+
+rc('text', usetex=True)
+mpl.ion()
+
 
 def compare_samples(samples, test_types, control_types, bins, acc_func=np.sum,
                     skip_types=None, norm_range=(1010, 1022)):
@@ -180,10 +185,13 @@ if __name__ == "__main__":
         label = '_' + label
         times_in = (-100 < times) & (times < 100)
         top_abs = max(tic[times_in].max(), top_abs)
-    mpl.legend(ncol=2, loc='upper center', frameon=False,
-               bbox_to_anchor=(0.5, 1.1))
+    mpl.legend(loc='upper left', frameon=False,
+               bbox_to_anchor=(0.0, 1.2))
     ax = mpl.gca()
     mpl.ylim(-top_abs*1.1, top_abs*1.1)
+    mpl.yticks([-5, 0, 5], [5, 0, 5])
+    mpl.xticks([-50, 0, 50], [-50, 0, 50])
+    mpl.show()
     top_abs = np.round(top_abs / 5) * 5
     ax.spines['left'].set_bounds(-top_abs, top_abs)
     mpl.xlim(-90, 90)

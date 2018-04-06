@@ -58,12 +58,12 @@ if __name__ == "__main__":
         'tsimbazaza_4d': clist[6],
     }
     color_names = {
-        clist[1]: 'D. mel WT',
-        clist[2]: 'D. mel eloF-',
-        clist[3]: 'D. sec eloF- A',
-        clist[4]: 'D. sec eloF- B',
-        clist[5]: 'D. sec WT',
-        clist[6]: 'D. sim WT'
+        clist[1]: r'$\it{D.\ mel}$ WT',
+        clist[2]: r'$\it{D.\ mel\ eloF}$-',
+        clist[3]: r'$\it{D.\ sec\ eloF}$- A',
+        clist[4]: r'$\it{D.\ sec\ eloF}$- B',
+        clist[5]: r'$\it{D.\ sec}$ WT',
+        clist[6]: r'$\it{D.\ sim}$ WT'
     }
     r_color_names = {val: key for key,val in color_names.items()}
     all_data = pd.DataFrame()
