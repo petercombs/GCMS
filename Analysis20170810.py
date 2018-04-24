@@ -127,7 +127,7 @@ if __name__ == "__main__":
     mpl.savefig('pcs.clean.eps', dpi=300)
 
 
-    figure(figsize=(3.5,2))
+    figure(figsize=(3.25,2))
     pc_all = pd.DataFrame(
         dict(pc1=pc1,
              pc2=pc2,
@@ -151,7 +151,7 @@ if __name__ == "__main__":
     ax.set_aspect(1.1)
     fig.subplots_adjust(left=0.1, right=0.7, bottom=0.2)
     savefig('pca_unlabelled.eps')
-    mpl.legend(loc='center left', bbox_to_anchor=(.95,0.5), frameon=True)
+    mpl.legend(loc='center left', bbox_to_anchor=(.85,0.3), frameon=True)
     savefig('pca_legend.eps')
     for sample, x, y in zip(all_data_normed.index, pc1, pc2):
         if '+' in sample:

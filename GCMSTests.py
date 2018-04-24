@@ -172,32 +172,37 @@ if __name__ == "__main__":
     c = args.control_color
     label=args.control_label
     top_abs = 0
-    for tic, times in control_data:
+    for i, (tic, times) in enumerate(control_data):
+        times_in = (-100 < times) & (times < 100)
+        if sum(times_in) == 0: continue
         mpl.plot(times, tic, color=c, label=label)
         label = '_' + label
-        times_in = (-100 < times) & (times < 100)
         top_abs = max(tic[times_in].max(), top_abs)
 
     c = args.test_color
     label=args.test_label
     for tic, times in test_data:
+        times_in = (-100 < times) & (times < 100)
+        if sum(times_in) == 0: continue
         mpl.plot(times, -tic, color=c, label=label)
         label = '_' + label
-        times_in = (-100 < times) & (times < 100)
         top_abs = max(tic[times_in].max(), top_abs)
     mpl.legend(loc='upper left', frameon=False,
                bbox_to_anchor=(0.0, 1.2))
     ax = mpl.gca()
-    mpl.ylim(-top_abs*1.1, top_abs*1.1)
+    #mpl.ylim(-top_abs*1.1, top_abs*1.1)
+    mpl.ylim(-7,7)
     mpl.yticks([-5, 0, 5], [5, 0, 5])
     mpl.xticks([-50, 0, 50], [-50, 0, 50])
     mpl.show()
     top_abs = np.round(top_abs / 5) * 5
-    ax.spines['left'].set_bounds(-top_abs, top_abs)
+    #ax.spines['left'].set_bounds(-top_abs, top_abs)
+    ax.spines['left'].set_bounds(-5, 5)
     mpl.xlim(-90, 90)
     mpl.xlabel('Relative Retention Time (s)')
     mpl.ylabel('Relative TIC')
     mpl.tight_layout()
     mpl.savefig(fbase + '.eps', dpi=300)
+    mpl.savefig(fbase + '.png', dpi=300)
 
 
