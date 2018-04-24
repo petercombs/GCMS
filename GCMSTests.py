@@ -11,6 +11,8 @@ from matplotlib import rc
 rc('text', usetex=True)
 mpl.ion()
 
+verbose = False
+
 
 def compare_samples(samples, test_types, control_types, bins, acc_func=np.sum,
                     skip_types=None, norm_range=(1010, 1022)):
@@ -57,6 +59,7 @@ def compare_samples(samples, test_types, control_types, bins, acc_func=np.sum,
             continue
         for test_type in test_types:
             if test_type in expt_title:
+                print(expt_title, sample.filename)
                 test_data.append(normalize_tic(tic, times, **norm_kwargs))
                 test_filenames.append(sample.filename)
                 test_samples.append(sample)
@@ -64,13 +67,15 @@ def compare_samples(samples, test_types, control_types, bins, acc_func=np.sum,
                 break
         for control_type in control_types:
             if control_type in expt_title and not ided:
+                print(expt_title, sample.filename)
                 control_data.append(normalize_tic(tic, times, **norm_kwargs))
                 control_filenames.append(sample.filename)
                 control_samples.append(sample)
                 ided = True
                 break
         if not ided:
-            print("skipping ", expt_title, sample.filename)
+            if verbose:
+                print("skipping ", expt_title, sample.filename)
 
 
     test_dataset = pd.DataFrame()
