@@ -4,7 +4,8 @@ rule all:
         "mel_eloF_vs_WT.tsv",
         "mel_eloF_vs_GFP.tsv",
         "mel_bond_vs_WT.tsv",
-        "mel_eloF_vs_noRNAi.tsv"
+        "mel_eloF_vs_noRNAi.tsv",
+		"sim_WT_vs_sec_WT.tsv"
 
 
 rule figure_2:
@@ -97,3 +98,20 @@ rule mel_bond_gcms:
         -- */*.CDF
         """
 
+rule simsec_gcms:
+    input:
+        code="GCMSTests.py"
+    output:
+        table="sim_WT_vs_sec_WT.tsv",
+        plot="sim_WT_vs_sec_WT.eps",
+    shell:"""
+    python {input.code} \
+        -O {output.table} \
+        --test-types tsimbazaza \
+        --control-types sechellia_WT\
+		--norm-peak-start 1060 --norm-peak-stop 1070 \
+		--test-color "black" --control-color "red" \
+		--test-label "\\\\textit{{D.sim}} WT" \
+        --control-label "\\\\textit{{D.sec}} WT" \
+        -- */*.CDF
+        """
